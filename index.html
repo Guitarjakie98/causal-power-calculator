@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive power analysis calculator for two-group randomized experiments with binary outcomes.">
+  <title>Causal Power Lab</title>
+  <link rel="stylesheet" href="./src/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <div>
+        <p class="eyebrow">Experiment design toolkit</p>
+        <h1>Causal Power Lab</h1>
+        <p class="subtitle">Plan a two-group randomized experiment before you run it.</p>
+      </div>
+      <a class="github-link" href="https://github.com/Guitarjakie98/causal-power-calculator" target="_blank" rel="noreferrer">View on GitHub</a>
+    </div>
+  </header>
+
+  <main class="shell main-grid">
+    <section class="panel controls-panel" aria-labelledby="design-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Inputs</p>
+          <h2 id="design-heading">Experiment design</h2>
+        </div>
+        <button id="resetButton" class="text-button" type="button">Reset defaults</button>
+      </div>
+
+      <div id="validationMessage" class="validation" role="alert" hidden></div>
+
+      <div class="control">
+        <div class="control-label">
+          <label for="baselineNumber">Baseline conversion rate</label>
+          <span class="hint">Expected control outcome</span>
+        </div>
+        <div class="scale-row">
+          <input id="baselineRange" type="range" min="0.5" max="80" step="0.5" value="10" aria-label="Baseline conversion rate slider">
+          <div class="number-suffix">
+            <input id="baselineNumber" type="number" min="0.5" max="80" step="0.5" value="10">
+            <span>%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="control">
+        <div class="control-label">
+          <label for="effectNumber">Minimum detectable effect</label>
+          <span class="hint">Smallest lift worth detecting</span>
+        </div>
+        <div class="effect-mode">
+          <label class="radio-pill">
+            <input type="radio" name="effectMode" value="relative" checked>
+            <span>Relative lift</span>
+          </label>
+          <label class="radio-pill">
+            <input type="radio" name="effectMode" value="absolute">
+            <span>Absolute points</span>
+          </label>
+        </div>
+        <div class="scale-row">
+          <input id="effectRange" type="range" min="1" max="100" step="1" value="20" aria-label="Minimum detectable effect slider">
+          <div class="number-suffix">
+            <input id="effectNumber" type="number" min="1" max="100" step="1" value="20">
+            <span id="effectSuffix">%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-column-controls">
+        <div class="control compact-control">
+          <div class="control-label">
+            <label for="powerNumber">Target power</label>
+            <span class="hint">1 − β</span>
+          </div>
+          <div class="scale-row">
+            <input id="powerRange" type="range" min="50" max="99" step="1" value="80" aria-label="Target power slider">
+            <div class="number-suffix">
+              <input id="powerNumber" type="number" min="50" max="99" step="1" value="80">
+              <span>%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="control compact-control">
+          <div class="control-label">
+            <label for="alphaNumber">Significance level</label>
+            <span class="hint">α, two-sided</span>
+          </div>
+          <div class="scale-row">
+            <input id="alphaRange" type="range" min="1" max="20" step="1" value="5" aria-label="Significance level slider">
+            <div class="number-suffix">
+              <input id="alphaNumber" type="number" min="1" max="20" step="1" value="5">
+              <span>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control">
+        <div class="control-label">
+          <label for="allocationNumber">Treatment allocation</label>
+          <span class="hint">Share assigned to treatment</span>
+        </div>
+        <div class="scale-row">
+          <input id="allocationRange" type="range" min="10" max="90" step="1" value="50" aria-label="Treatment allocation slider">
+          <div class="number-suffix">
+            <input id="allocationNumber" type="number" min="10" max="90" step="1" value="50">
+            <span>%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-column-controls">
+        <div class="control compact-control">
+          <div class="control-label">
+            <label for="availableSample">Available sample</label>
+            <span class="hint">Units you can recruit</span>
+          </div>
+          <input id="availableSample" class="wide-number" type="number" min="10" max="100000000" step="10" value="5000">
+        </div>
+
+        <div class="control compact-control">
+          <div class="control-label">
+            <label for="attritionNumber">Expected attrition</label>
+            <span class="hint">Missing / unusable outcomes</span>
+          </div>
+          <div class="scale-row">
+            <input id="attritionRange" type="range" min="0" max="50" step="1" value="5" aria-label="Expected attrition slider">
+            <div class="number-suffix">
+              <input id="attritionNumber" type="number" min="0" max="50" step="1" value="5">
+              <span>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="microcopy">Available sample is treated as the number of units you can recruit <strong>before</strong> expected attrition.</p>
+    </section>
+
+    <section class="results-stack" aria-labelledby="results-heading">
+      <section class="panel hero-result">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Power analysis</p>
+            <h2 id="results-heading">Recommended design</h2>
+          </div>
+          <span id="statusBadge" class="status-badge">Calculating…</span>
+        </div>
+
+        <div class="headline-metric">
+          <span id="requiredStarting">—</span>
+          <span class="metric-label">units to recruit</span>
+        </div>
+        <p id="designSummary" class="result-summary" aria-live="polite"></p>
+
+        <div class="metric-grid">
+          <div><span class="metric-name">Analyzable N</span><strong id="requiredAnalyzable">—</strong></div>
+          <div><span class="metric-name">Control</span><strong id="controlN">—</strong></div>
+          <div><span class="metric-name">Treatment</span><strong id="treatmentN">—</strong></div>
+          <div><span class="metric-name">Treatment rate</span><strong id="treatmentRate">—</strong></div>
+        </div>
+      </section>
+
+      <section class="panel availability-panel">
+        <div>
+          <p class="eyebrow">Feasibility check</p>
+          <h2>Your available sample</h2>
+        </div>
+        <div class="availability-layout">
+          <div>
+            <span class="large-secondary" id="achievedPower">—</span>
+            <span class="metric-label">estimated power</span>
+          </div>
+          <p id="availabilitySummary" class="result-summary"></p>
+        </div>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Sensitivity</p>
+            <h2>Power curve</h2>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span><i class="legend-line target-line"></i>Target</span>
+            <span><i class="legend-line curve-line"></i>Power</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="powerChart" height="320" aria-label="Power curve showing statistical power by total analyzable sample size"></canvas>
+        </div>
+        <p id="chartDescription" class="microcopy"></p>
+      </section>
+
+      <section class="method-card">
+        <strong>What this calculator assumes</strong>
+        <p>Independent units, a binary outcome, two randomized groups, a two-sided test, and a normal approximation for the difference in proportions. Clustered, repeated-measures, geo, and switchback designs need different variance assumptions.</p>
+      </section>
+    </section>
+  </main>
+
+  <footer class="shell footer">
+    <p>Built for experiment planning. Power calculations depend on assumptions; document them before looking at results.</p>
+  </footer>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
