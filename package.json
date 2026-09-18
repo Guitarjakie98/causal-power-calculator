@@ -1,0 +1,10 @@
+{
+  "name": "causal-power-calculator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Interactive power analysis calculator for two-group randomized experiments with binary outcomes.",
+  "scripts": {
+    "test": "node --test"
+  }
+}
