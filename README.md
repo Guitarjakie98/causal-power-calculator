@@ -67,9 +67,31 @@ It is **not** currently appropriate for clustered randomized trials, geo experim
 
 ## Run locally
 
-No build step is required.
+No build step or Python packages are required. The app uses JavaScript modules, so opening `index.html` directly from your filesystem will not work reliably.
 
-Open `index.html` directly in a browser, or serve the folder with any static web server.
+### One-command setup (Windows PowerShell)
+
+Prerequisites: Git and Python 3.8+ available in your terminal (`git --version` and `python --version`). Paste this single line into PowerShell:
+
+```powershell
+$repo = Join-Path $HOME 'causal-power-calculator'; if (!(Test-Path $repo)) { git clone https://github.com/Guitarjakie98/causal-power-calculator.git $repo; if ($LASTEXITCODE -ne 0) { throw 'Clone failed' } }; if (!(Test-Path (Join-Path $repo 'launch.py'))) { throw 'Launcher missing. Update your existing clone with git pull, or choose a different folder.' }; python (Join-Path $repo 'launch.py')
+```
+
+This clones the repository if needed, starts a server on an available loopback port, and opens your default browser. Keep the terminal open while using the calculator. Press Ctrl+C to stop it.
+
+### Already downloaded or cloned?
+
+From the project folder, run:
+
+```bash
+python launch.py
+```
+
+For an older Git clone, run `git pull --ff-only` first to obtain the launcher. On macOS or Linux, use `python3 launch.py` if Python is installed under that name. The launcher prints its local URL if the browser does not open automatically.
+
+Alternatively, use any static web server to serve the repository root over HTTP.
+
+### Unit tests
 
 To run the unit tests:
 
